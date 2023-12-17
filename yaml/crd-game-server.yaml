@@ -1,0 +1,64 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  # name must match the spec fields below, and be in the form: <plural>.<group>
+  name: gameservers.stable.veverse.com
+spec:
+  group: stable.veverse.com # group name to use for REST API: /apis/<group>/<version>
+  # list of versions supported by this CustomResourceDefinition
+  versions:
+    - name: v1
+      served: true # Each version can be enabled/disabled by Served flag.
+      storage: true       # One and only one version must be marked as the storage version.
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                image:
+                  type: string
+                imagePullSecrets:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                settings:
+                  type: object
+                  properties:
+                    host:
+                      type: string
+                    key:
+                      type: string
+                    maxPlayers:
+                      type: integer
+                    spaceId:
+                      type: string
+                    serverId:
+                      type: string
+                    serverName:
+                      type: string
+                    apiEmail:
+                      type: string
+                    apiPassword:
+                      type: string
+                env:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      value:
+                        type: string
+  scope: Namespaced # either Namespaced or Cluster
+  names:
+    plural: gameservers # plural name to be used in the URL: /apis/<group>/<version>/<plural>
+    singular: gameserver
+    kind: GameServer
+    shortNames:
+      - gs

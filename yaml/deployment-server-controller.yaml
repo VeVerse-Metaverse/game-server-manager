@@ -1,0 +1,27 @@
+# Example shell-operator deployment used during development
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: veverse-server-controller
+  labels:
+    app: veverse-server-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: veverse-server-controller
+  template:
+    metadata:
+      labels:
+        app: veverse-server-controller
+    spec:
+      serviceAccountName: "veverse-acc"
+      imagePullSecrets:
+        - name: veverse-secret
+      containers:
+        - name: veverse-server-controller
+          image: registry.dev.hackerman.me/artheon/shell-operator:v1
+          imagePullPolicy: Always
+#          command: [ "/bin/bash" ]
+#          args: [ "-c", "while true; do echo ok; sleep 10;done" ]

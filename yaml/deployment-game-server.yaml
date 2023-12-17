@@ -1,0 +1,109 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: veverse-server
+  labels:
+    app: veverse-server
+spec:
+  selector:
+    matchLabels:
+      app: veverse-server
+  template:
+    metadata:
+      labels:
+        app: veverse-server
+    spec:
+      serviceAccountName: "veverse-acc"
+      imagePullSecrets:
+        - name: veverse-secret
+      containers:
+        - name: veverse-server
+          image: registry.dev.hackerman.me/artheon/linux-server-deployment:gs-latest
+          imagePullPolicy: Always
+          ports:
+            - name: unreal
+              containerPort: 7777
+          env:
+            - name: VE_SERVER_BUILD
+              value: "1.0"
+            - name: VE_SERVER_HOST
+              value: "192.168.111.111"
+            - name: VE_SERVER_PORT
+              value: "7777"
+            - name: VE_SERVER_PUBLIC_PORT
+              value: "30001" # todo: dynamic
+            - name: VE_SERVER_API_KEY
+              value: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+            - name: VE_SERVER_MAX_PLAYERS
+              value: "100"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: veverse-server # todo: multiple
+spec:
+  selector:
+    app: veverse-server # todo: multiple, attach to the app
+  ports:
+    - name: unreal
+      nodePort: 30001 # todo: dynamic
+      targetPort: 7777 # internal UE port
+      protocol: UDP
+      port: 30001 # todo: dynamic
+  type: NodePort
+
+#---
+#apiVersion: v1
+#kind: Ingress
+#metadata:
+#  annotations:
+#    kubernetes.io/ingress.class: nginx
+#    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+#  name: veverse-server
+#spec:
+#  rules:
+#    - host: 192.168.111.111 # todo: {{ .Values.global.ci_url }}
+#      http:
+#        paths:
+#          - backend:
+#              serviceName: veverse-server
+#              servicePort: http
+#            path: /
+#  tls:
+#    - hosts:
+#        - 192.168.111.111 # todo: {{ .Values.global.ci_url }}
+#      secretName: ingress-tls
+
+#---
+#apiVersion: v1
+#kind: Pod
+#metadata:
+#  name: veverse-server # todo: multiple
+#  labels:
+#    app: veverse-server # todo: multiple
+#spec:
+#  containers:
+#    - name: veverse-server
+#      image: registry.dev.hackerman.me/artheon/shell-operator:veverse-server
+#      ports:
+#        - name: unreal
+#          containerPort: 7777
+#      env:
+#        - name: VE_SERVER_BUILD
+#          value: "1.0"
+#        - name: VE_SERVER_HOST
+#          value: "192.168.111.111"
+#        - name: VE_SERVER_PORT
+#          value: "7777"
+#        - name: VE_SERVER_PUBLIC_PORT
+#          value: "30001" # todo: dynamic
+#        - name: VE_SERVER_API_KEY
+#          value: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+#        - name: VE_SERVER_MAX_PLAYERS
+#          value: "100"
+#      imagePullPolicy: Always
+#  imagePullSecrets:
+#    - name: veverse-secret
+#  serviceAccountName: veverse-acc

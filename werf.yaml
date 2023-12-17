@@ -1,0 +1,6 @@
+project: veverse-server-controller
+configVersion: 1
+
+---
+image: controller
+dockerfile: Dockerfile

@@ -1,0 +1,16 @@
+# example game server deployment used during development
+---
+apiVersion: "stable.veverse.com/v1"
+kind: GameServer
+metadata:
+  name: veverse-game-server
+spec:
+  image: "registry.dev.hackerman.me/artheon/linux-server-deployment:gs-latest"
+  imagePullSecrets:
+    - name: "veverse-secret"
+  settings:
+    host: "game-server.example.com"
+    apiKey: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    maxPlayers: 100
+    spaceId: "xxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx"
+  env: [ ]

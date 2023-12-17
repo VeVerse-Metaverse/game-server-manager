@@ -1,0 +1,48 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shell-operator
+  labels:
+    app: shell-operator
+spec:
+  selector:
+    app: shell-operator
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8000
+  type: NodePort
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: shell-operator-ingress
+  labels:
+    app: shell-operator
+  annotations:
+    kubernetes.io/ingress.class: nginx
+#    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+spec:
+  ingressClassName: nginx
+  defaultBackend:
+    service:
+      name: shell-operator
+      port:
+        number: 8000
+  rules:
+    - host: shell-operator.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: shell-operator
+                port:
+                  number: 8000
+#  tls:
+#    - hosts:
+#        - 192.168.111.111
+#      secretName: ingress-tls

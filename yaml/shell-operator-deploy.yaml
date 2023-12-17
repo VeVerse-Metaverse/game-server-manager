@@ -1,0 +1,25 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: shell-operator
+  labels:
+    shell-operator: veverse
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shell-operator
+  template:
+    metadata:
+      labels:
+        app: shell-operator
+    spec:
+      containers:
+        - name: shell-operator
+          image: registry.mycompany.com/shell-operator:v1
+          imagePullPolicy: Always
+          env:
+            - name: LOG_LEVEL
+              value: debug
+      serviceAccountName: veverse-acc

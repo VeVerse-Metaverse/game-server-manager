@@ -1,0 +1,90 @@
+# Example shell-operator pod used during development
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: veverse-api
+  labels:
+    app: veverse-api
+spec:
+  selector:
+    matchLabels:
+      app: veverse-api
+  template:
+    metadata:
+      labels:
+        app: veverse-api
+    spec:
+      serviceAccountName: veverse-acc
+      imagePullSecrets:
+        - name: dev-hackerman-me
+      containers:
+        - name: veverse-api
+          image: registry.dev.hackerman.me/artheon/shell-operator:api
+          imagePullPolicy: Always
+          env:
+            - name: ENVIRONMENT
+              value: "development"
+            - name: MODULE_NAME
+              value: "app.main"
+            - name: VARIABLE_NAME
+              value: "app"
+            - name: MAX_WORKERS
+              value: "4"
+            - name: LOG_LEVEL
+              value: "INFO"
+            - name: DB_HOST
+              value: "127.0.0.1"
+            - name: DB_PORT
+              value: "5555"
+            - name: DB_NAME
+              value: "databasename"
+            - name: DB_USER
+              value: "postgres"
+            - name: DB_PASS
+              value: "password"
+            - name: AWS_ACCESS_KEY_ID
+              value: "AKXXXXXXXXXXXXXXXXXX"
+            - name: AWS_SECRET_ACCESS_KEY
+              value: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: veverse-api
+  labels:
+    app: veverse-api
+spec:
+  selector:
+    app: veverse-api
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: veverse-api
+  labels:
+    app: veverse-api
+  annotations:
+    # kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: "3000m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+spec:
+  rules:
+    - host: veverse-api.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: veverse-api
+                port:
+                  number: 80

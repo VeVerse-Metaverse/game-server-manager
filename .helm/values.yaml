@@ -1,0 +1,45 @@
+app:
+  server-controller:
+    command: .
+  db:
+    host:
+      _default: "localhost"
+      dev: "example.com"
+      test: "example.com"
+      prod: "example.com"
+    port:
+      _default: "5555"
+      dev: "5555"
+      test: "5555"
+      prod: "5555"
+    user:
+      _default: "postgres"
+      dev: "metaverse-dev"
+      test: "metaverse-test"
+      prod: "metaverse-prod"
+    name:
+      _default: "metaverse"
+      dev: "metaverse-dev"
+      test: "metaverse-test"
+      prod: "metaverse-prod"
+    password:
+      _default: "postgres"
+      dev: "password"
+      test: "password"
+      prod: "password"
+## String to partially override gs.fullname template (will maintain the release name)
+##
+# nameOverride:
+
+## String to fully override gs.fullname template
+##
+# fullnameOverride:
+
+CRD:
+  enabled: false
+clusterrolebinding:
+  namespace:
+    _default: veverse-gs-dev
+    prod: veverse-gs-prod
+    dev: veverse-gs-dev
+    test: veverse-gs-test

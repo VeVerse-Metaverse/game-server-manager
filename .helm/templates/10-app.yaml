@@ -1,0 +1,44 @@
+# Server controller
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "gs.fullname" . }}
+  labels:
+    app: {{ template "gs.name" . }}
+    chart: {{ template "gs.chart" .  }}
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app:  {{ template "gs.name" . }}
+      release: "{{ .Release.Name }}"
+  template:
+    metadata:
+      labels:
+        app: {{ template "gs.name" . }}
+        release: "{{ .Release.Name }}"
+        chart: {{ template "gs.chart" .  }}
+    spec:
+      serviceAccountName: {{ template "gs.fullname" . }}-sa
+      imagePullSecrets:
+        - name: registrysecret
+      containers:
+        - name: {{ template "gs.name" . }}
+          image: {{ .Values.werf.image.controller }}
+          imagePullPolicy: Always
+          env:
+            - name: ENVIRONMENT
+              value: {{ .Values.global.env | default "dev" }}
+            - name: DB_HOST
+              value: {{pluck .Values.global.env .Values.app.db.host | first | default .Values.app.db.host._default}}
+            - name: DB_PORT
+              value: {{pluck .Values.global.env .Values.app.db.port | first | default .Values.app.db.port._default | quote}}
+            - name: DB_USER
+              value: {{pluck .Values.global.env .Values.app.db.user | first | default .Values.app.db.user._default}}
+            - name: DB_PASS
+              value: {{pluck .Values.global.env .Values.app.db.password | first | default .Values.app.db.password._default}}
+            - name: DB_NAME
+              value: {{pluck .Values.global.env .Values.app.db.name | first | default .Values.app.db.name._default}}
